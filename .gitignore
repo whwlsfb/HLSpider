@@ -1,0 +1,6 @@
+*.spec
+*.csv
+__pycache__
+/build
+/dist
+.vscode
