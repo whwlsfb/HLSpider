@@ -61,7 +61,7 @@ class RLinkExtractor(FilteringLinkExtractor):
         urls = []
         for text in texts:
             sub_result = re.findall(
-                r"[a-zA-z]+://[A-Za-z0-9./_-]*|www.[A-Za-z0-9.-]*.[cn|com|org|net|hk|pw|info|top|site|xyz|tech|io|fun|pro|tv|store|dev][A-Za-z0-9./_-]*", text)
+                r"[a-zA-Z]+://[A-Za-z0-9./_-|=?&]*|([A-Za-z0-9])([A-Za-z0-9.-])*\.+.[cn|com|org|net|hk|pw|info|top|site|xyz|tech|io|fun|pro|tv|store|dev][A-Za-z0-9./_-|=?&]*", text)
             tmpUrls = []
             for _url in sub_result:
                 tmpUrls.append(Link(url=process_url(_url),

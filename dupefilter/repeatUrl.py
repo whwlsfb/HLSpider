@@ -43,7 +43,7 @@ class RepeatUrl:
         :param reason: 
         :return: 
         """
-        print("扫描结束，共扫描页面：%d个。" % len(self.visited_url))
+        print("\r\n扫描结束，共扫描页面：%d个。\r\n" % len(self.visited_url))
         pass
 
     def log(self, request, spider):
