@@ -11,11 +11,11 @@ urls = []
 domains = []
 output = None
 
-parser = argparse.ArgumentParser(description='页面敏感字爬虫.')
+parser = argparse.ArgumentParser(description='页面敏感字爬虫。')
 parser.add_argument('-u', '--urls', required=True,
-                    help="扫描起始地址列表，多个地址使用英文逗号(,)分隔。")
+                    help="扫描起始地址，多个地址使用英文逗号(,)分隔。")
 parser.add_argument('-d', '--domains', required=True,
-                    help="需要深度扫描的域名列表，多个域名使用英文逗号(,)分隔。")
+                    help="需要深度扫描的根域名，多个域名使用英文逗号(,)分隔。")
 parser.add_argument('-o', '--output', required=False, help="导出文件的保存位置。")
 args = parser.parse_args()
 urls = args.urls.split(',')

@@ -1,5 +1,6 @@
 import threading
 
+
 class RepeatUrl:
     def __init__(self):
         self.visited_url = set()
@@ -42,6 +43,7 @@ class RepeatUrl:
         :param reason: 
         :return: 
         """
+        print("扫描结束，共扫描页面：%d个。" % len(self.visited_url))
         pass
 
     def log(self, request, spider):
