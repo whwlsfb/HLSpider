@@ -55,16 +55,16 @@ class RLinkExtractor(FilteringLinkExtractor):
             deny_extensions=deny_extensions,
             restrict_text=restrict_text,
         )
+    regex = r"((([a-zA-z]+://[A-Za-z0-9-]+)|(([A-Za-z0-9.-]+)(\.+)(cn|com|org|net|hk|pw|info|top|site|xyz|tech|io|fun|pro|tv|store|dev)+))[A-Za-z0-9./-_?&=@)(%~;'\[\]|+]*)"
 
     def extract_links(self, response):
         texts = response.xpath('///text()').extract()
         urls = []
         for text in texts:
-            sub_result = re.findall(
-                r"[a-zA-Z]+://[A-Za-z0-9./_-|=?&]*|([A-Za-z0-9])([A-Za-z0-9.-])*\.+.[cn|com|org|net|hk|pw|info|top|site|xyz|tech|io|fun|pro|tv|store|dev][A-Za-z0-9./_-|=?&]*", text)
             tmpUrls = []
-            for _url in sub_result:
-                tmpUrls.append(Link(url=process_url(_url),
+            matches = re.finditer(self.regex, text, re.MULTILINE)
+            for matchNum, match in enumerate(matches, start=1):
+                tmpUrls.append(Link(url=process_url(match.groups()[0]),
                                     text="From: %s" % response.url, nofollow=True))
             urls.extend(self._process_links(tmpUrls))
         return unique_list(urls)
