@@ -1,4 +1,5 @@
 import threading
+import datetime
 
 
 class RepeatUrl:
@@ -44,6 +45,9 @@ class RepeatUrl:
         :return: 
         """
         print("\r\n扫描结束，共扫描页面：%d个。\r\n" % len(self.visited_url))
+        print("写入扫描历史记录...\r\n")
+        with open('scan-history_%s.txt' % datetime.datetime.now().strftime("%Y%m%d%H%M%S"), 'w+') as fs:
+            fs.write('\r'.join(self.visited_url))
         pass
 
     def log(self, request, spider):

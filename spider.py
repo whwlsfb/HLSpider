@@ -1,7 +1,9 @@
 import logging
+from os import link
 from scrapy.crawler import CrawlerProcess
 from scrapy.linkextractors.lxmlhtml import *
 from scrapy.spiders import CrawlSpider, Rule
+from scrapy.exceptions import NotSupported
 import sqlite3
 import argparse
 from dupefilter import *
@@ -10,6 +12,21 @@ import codecs
 urls = []
 domains = []
 output = None
+
+print('''
+@@@  @@@  @@@        @@@@@@   @@@@@@@   @@@  @@@@@@@   @@@@@@@@  @@@@@@@   
+@@@  @@@  @@@       @@@@@@@   @@@@@@@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  
+@@!  @@@  @@!       !@@       @@!  @@@  @@!  @@!  @@@  @@!       @@!  @@@  
+!@!  @!@  !@!       !@!       !@!  @!@  !@!  !@!  @!@  !@!       !@!  @!@  
+@!@!@!@!  @!!       !!@@!!    @!@@!@!   !!@  @!@  !@!  @!!!:!    @!@!!@!   
+!!!@!!!!  !!!        !!@!!!   !!@!!!    !!!  !@!  !!!  !!!!!:    !!@!@!    
+!!:  !!!  !!:            !:!  !!:       !!:  !!:  !!!  !!:       !!: :!!   
+:!:  !:!   :!:          !:!   :!:       :!:  :!:  !:!  :!:       :!:  !:!  
+::   :::   :: ::::  :::: ::    ::        ::   :::: ::   :: ::::  ::   :::  
+ :   : :  : :: : :  :: : :     :        :    :: :  :   : :: ::    :   : : 
+
+HLSpider (Hide link spider).
+''')
 
 parser = argparse.ArgumentParser(description='页面敏感字爬虫。')
 parser.add_argument('-u', '--urls', required=True,
@@ -74,7 +91,12 @@ class DefaultSpider(CrawlSpider):
 
     def parse_item(self, response):
         print_log("正在检测链接: %s" % response.url)
-        texts = response.xpath('///text()').extract()
+        try:
+            texts = response.xpath('///text()').extract()
+        except NotSupported:
+            self.log("Unsupport content-type. URL: %s" %
+                     response.url, level=logging.WARNING)
+            pass
         _hasDangerWords = []
         for text in texts:
             for word in dangerWords:
@@ -84,14 +106,25 @@ class DefaultSpider(CrawlSpider):
         if len(_hasDangerWords) > 0:
             message = "发现可疑关键字：%s，链接：%s" % (
                 ','.join(_hasDangerWords), response.url)
-            if (not response.meta['link_text'] == ""):
-                message = message + ("，来源页面：%s" %
-                                     response.meta['link_text'].strip())
+            reff = self.getRef(response)
+            if (not reff == ""):
+                message = message + ("，来源页面：%s" % reff)
             self.log(message, level=logging.WARNING)
             if not self.fs == None:
                 self.fs.write(self.prefix(response.url)+',' + self.prefix('，'.join(_hasDangerWords)) +
-                              ',' + self.prefix(response.meta['link_text']) + '\r')
+                              ',' + self.prefix(reff) + '\r')
                 self.fs.flush()
+
+    def getRef(self, response):
+        link_text = (response.meta['link_text'] or '').strip()
+        reff = (str(response.request.headers[b'Referer'], encoding="utf8")
+                if b'Referer' in response.request.headers else '').strip()
+        if reff == '':
+            return link_text
+        elif link_text.startswith("From: "):
+            return link_text
+        else:
+            return "From: %s" % reff
 
     def prefix(self, text):
         return str(text).replace(',', '，').replace('\r', '').replace('\n', '').strip()
