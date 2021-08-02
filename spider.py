@@ -30,26 +30,26 @@ HLSpider (Hide link spider).
 
 parser = argparse.ArgumentParser(description='页面敏感字爬虫。')
 parser.add_argument('-u', '--urls', required=True,
-                    help="扫描起始地址，多个地址使用英文逗号(,)分隔。")
+                    help="扫描起始地址，多个地址使用英文逗号(,)分隔。例如：'http://www.baidu.com'")
 parser.add_argument('-d', '--domains', required=True,
-                    help="需要深度扫描的根域名，多个域名使用英文逗号(,)分隔。")
-parser.add_argument('-o', '--output', required=False, help="导出文件的保存位置。")
+                    help="需要进行深度扫描的根域名，多个域名使用英文逗号(,)分隔。例如：'baidu.com'")
+parser.add_argument('-o', '--output', required=False, help="导出问题链接的CSV文件的保存位置，不填写则仅显示不保存。")
 args = parser.parse_args()
 urls = args.urls.split(',')
 domains = args.domains.split(',')
 output = args.output
 
 
-def get_re():
+def get_dangerWords():
     conn = sqlite3.connect('words.db')
     c = conn.cursor()
-    res = c.execute('SELECT distinct re FROM "danger_words";')
+    res = c.execute('SELECT text FROM "danger_words";')
     res = list(res)
     conn.close()
     return res
 
 
-dangerWords = get_re()
+dangerWords = get_dangerWords()
 
 
 print("loaded danger words: %d" % len(dangerWords))
