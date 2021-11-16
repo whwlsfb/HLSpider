@@ -61,19 +61,23 @@ class RLinkExtractor(LinkExtractor):
         for text in texts:
             tmpUrls = []
             urlmatches = re.finditer(self.urlregex, text, re.MULTILINE)
-            for matchNum, match in enumerate(urlmatches, start=1):
+            for matchNum, match in enumerate(urlmatches, start=0):
                 try:
-                    _url = urlparse(process_url(match.group()))
-                    tmpUrls.append(Link(url=_url.geturl(),
-                                        text="From: %s" % response.url))
+                    _url = urlparse(process_url(match.group())).geturl()
+                    tmpUrls.append(Link(url=_url,
+                                        text=response.url))
+                    if not '://' in _url and not _url.startswith('www.'):                   
+                        tmpUrls.append(Link(url='www.%s' % _url,
+                                            text=response.url))
+
                 except:
                     pass
             ipurlmatches = re.finditer(self.ipurlregex, text, re.MULTILINE)
-            for matchNum, match in enumerate(ipurlmatches, start=1):
+            for matchNum, match in enumerate(ipurlmatches, start=0):
                 try:
                     _url = urlparse(process_url(match.group()))
                     tmpUrls.append(Link(url=_url.geturl(),
-                                        text="From: %s" % response.url))
+                                        text=response.url))
                 except:
                     pass
             urls.extend(self._process_links(tmpUrls))

@@ -121,10 +121,8 @@ class DefaultSpider(CrawlSpider):
                 if b'Referer' in response.request.headers else '').strip()
         if reff == '':
             return link_text
-        elif link_text.startswith("From: "):
-            return link_text
         else:
-            return "From: %s" % reff
+            return reff
 
     def prefix(self, text):
         return str(text).replace(',', '，').replace('\r', '').replace('\n', '').strip()
