@@ -1,6 +1,11 @@
 # HLSpider
-基于Scrapy的页面敏感词检测工具
+基于[Scrapy](https://github.com/scrapy/scrapy)的页面敏感词检测工具.
 
+## 特性
+
+1. 支持可控范围的页面扫描。
+2. 更全面的链接提取机制，即使链接不具有`href`，不具有`http`/`https`协议头也同样可以提取到。
+3. 高速的多线程扫描机制。
 
 ## 安装
 
